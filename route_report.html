@@ -1,0 +1,1134 @@
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport"
+      content="width=device-width, initial-scale=1.0">
+
+<title>
+Google Maps Web Automation Dashboard
+</title>
+
+
+<!-- Chart.js -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+    margin: 0;
+
+    font-family:
+        "Segoe UI",
+        Arial,
+        sans-serif;
+
+    background:
+        linear-gradient(
+            135deg,
+            #eef2ff,
+            #f8fafc,
+            #ecfeff
+        );
+
+    color: #1e293b;
+
+}
+
+
+.header {
+
+    background:
+        linear-gradient(
+            135deg,
+            #2563eb,
+            #4f46e5,
+            #7c3aed
+        );
+
+    color: white;
+
+    padding: 45px 30px;
+
+    text-align: center;
+
+    box-shadow:
+        0 8px 25px
+        rgba(37, 99, 235, 0.25);
+
+}
+
+
+.header h1 {
+
+    margin: 0;
+
+    font-size: 34px;
+
+    letter-spacing: 0.5px;
+
+}
+
+
+.header p {
+
+    margin-top: 10px;
+
+    opacity: 0.9;
+
+    font-size: 16px;
+
+}
+
+
+.container {
+
+    max-width: 1250px;
+
+    margin: 35px auto;
+
+    padding: 0 20px;
+
+}
+
+
+.cards {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fit,
+            minmax(220px, 1fr)
+        );
+
+    gap: 20px;
+
+    margin-bottom: 30px;
+
+}
+
+
+.card {
+
+    background: white;
+
+    padding: 25px;
+
+    border-radius: 18px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15, 23, 42, 0.08);
+
+    border-left:
+        6px solid #4f46e5;
+
+    transition: 0.25s;
+
+}
+
+
+.card:hover {
+
+    transform:
+        translateY(-4px);
+
+    box-shadow:
+        0 12px 30px
+        rgba(15, 23, 42, 0.14);
+
+}
+
+
+.card-icon {
+
+    font-size: 30px;
+
+}
+
+
+.card-title {
+
+    color: #64748b;
+
+    font-size: 14px;
+
+    margin-top: 8px;
+
+}
+
+
+.card-value {
+
+    font-size: 27px;
+
+    font-weight: 700;
+
+    color: #1e293b;
+
+    margin-top: 5px;
+
+}
+
+
+.section {
+
+    background: white;
+
+    padding: 30px;
+
+    border-radius: 18px;
+
+    margin-bottom: 30px;
+
+    box-shadow:
+        0 8px 25px
+        rgba(15, 23, 42, 0.08);
+
+}
+
+
+.section h2 {
+
+    margin-top: 0;
+
+    color: #312e81;
+
+}
+
+
+.table-container {
+
+    overflow-x: auto;
+
+}
+
+
+table {
+
+    width: 100%;
+
+    border-collapse: collapse;
+
+    min-width: 900px;
+
+}
+
+
+th {
+
+    background:
+        linear-gradient(
+            135deg,
+            #4f46e5,
+            #2563eb
+        );
+
+    color: white;
+
+    padding: 14px;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+
+td {
+
+    padding: 13px;
+
+    border-bottom:
+        1px solid #e2e8f0;
+
+    text-align: center;
+
+    font-size: 14px;
+
+}
+
+
+tr:hover td {
+
+    background: #f8fafc;
+
+}
+
+
+.route-badge {
+
+    background: #ede9fe;
+
+    color: #6d28d9;
+
+    padding: 6px 12px;
+
+    border-radius: 20px;
+
+    font-weight: 600;
+
+}
+
+
+.chart-controls {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 15px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 25px;
+
+}
+
+
+.chart-controls label {
+
+    font-weight: 700;
+
+    color: #334155;
+
+}
+
+
+#chartType {
+
+    padding: 11px 16px;
+
+    border-radius: 10px;
+
+    border:
+        2px solid #6366f1;
+
+    background: white;
+
+    color: #312e81;
+
+    font-size: 15px;
+
+    font-weight: 600;
+
+    cursor: pointer;
+
+    outline: none;
+
+}
+
+
+#chartType:hover {
+
+    background: #eef2ff;
+
+}
+
+
+.chart-wrapper {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 450px;
+
+}
+
+
+.info-box {
+
+    background:
+        linear-gradient(
+            135deg,
+            #eff6ff,
+            #eef2ff
+        );
+
+    border-left:
+        5px solid #2563eb;
+
+    padding: 15px;
+
+    border-radius: 10px;
+
+    margin-bottom: 20px;
+
+    color: #334155;
+
+}
+
+
+.footer {
+
+    text-align: center;
+
+    padding: 30px;
+
+    color: #64748b;
+
+    font-size: 14px;
+
+}
+
+
+@media(max-width: 700px) {
+
+    .header h1 {
+
+        font-size: 25px;
+
+    }
+
+    .chart-wrapper {
+
+        height: 350px;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ===================================================== -->
+<!-- HEADER -->
+<!-- ===================================================== -->
+
+<div class="header">
+
+    <h1>
+        🗺️ Google Maps Web Automation
+    </h1>
+
+    <p>
+        Automated Route Extraction & Travel Analysis
+    </p>
+
+</div>
+
+
+<div class="container">
+
+
+<!-- ===================================================== -->
+<!-- SUMMARY CARDS -->
+<!-- ===================================================== -->
+
+<div class="cards">
+
+
+    <div class="card">
+
+        <div class="card-icon">
+            📍
+        </div>
+
+        <div class="card-title">
+            Location Pairs
+        </div>
+
+        <div class="card-value">
+            3
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-icon">
+            🛣️
+        </div>
+
+        <div class="card-title">
+            Routes Extracted
+        </div>
+
+        <div class="card-value">
+            7
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-icon">
+            📊
+        </div>
+
+        <div class="card-title">
+            Chart
+        </div>
+
+        <div class="card-value">
+            Interactive
+        </div>
+
+    </div>
+
+
+    <div class="card">
+
+        <div class="card-icon">
+            ⏱️
+        </div>
+
+        <div class="card-title">
+            Generated
+        </div>
+
+        <div class="card-value"
+             style="font-size:18px;">
+
+            03-10-2026 17:27
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- ROUTE DETAILS -->
+<!-- ===================================================== -->
+
+<div class="section">
+
+    <h2>
+        📋 Route Details
+    </h2>
+
+    <div class="table-container">
+
+        <table>
+
+            <thead>
+
+                <tr>
+
+                    <th>From</th>
+
+                    <th>To</th>
+
+                    <th>Route</th>
+
+                    <th>Distance</th>
+
+                    <th>Travel Time</th>
+
+                    <th>Timestamp</th>
+
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Laggere, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 1
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    10.5 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    35 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:26:43
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Laggere, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 2
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    12.2 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    46 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:26:43
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Yeshwanthpur, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 1
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    10.2 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    31 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:26:58
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Yeshwanthpur, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 2
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    10.0 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    32 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:26:58
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Yeshwanthpur, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 3
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    11.3 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    39 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:26:58
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Majestic, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 1
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    16.0 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    53 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:27:12
+            </td>
+
+        </tr>
+        
+        <tr>
+
+            <td>Chikkabanavara, Bangalore</td>
+
+            <td>Majestic, Bangalore</td>
+
+            <td>
+                <span class="route-badge">
+                    Route 2
+                </span>
+            </td>
+
+            <td>
+                <strong>
+                    17.6 km
+                </strong>
+            </td>
+
+            <td>
+                <strong>
+                    1 hr 3 min
+                </strong>
+            </td>
+
+            <td>
+                03-10-2026 17:27:12
+            </td>
+
+        </tr>
+        
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- INTERACTIVE CHART -->
+<!-- ===================================================== -->
+
+<div class="section">
+
+    <h2>
+        📊 Travel Time Analysis
+    </h2>
+
+
+    <div class="info-box">
+
+        Select a chart type below.
+        The same chart will update automatically.
+
+    </div>
+
+
+    <div class="chart-controls">
+
+        <label for="chartType">
+            Choose Chart Type:
+        </label>
+
+
+        <select
+            id="chartType"
+            onchange="changeChartType()"
+        >
+
+            <option value="bar">
+                📊 Bar Chart
+            </option>
+
+            <option value="line">
+                📈 Line Chart
+            </option>
+
+            <option value="pie">
+                🥧 Pie Chart
+            </option>
+
+        </select>
+
+    </div>
+
+
+    <div class="chart-wrapper">
+
+        <canvas
+            id="travelChart"
+        ></canvas>
+
+    </div>
+
+</div>
+
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- FOOTER -->
+<!-- ===================================================== -->
+
+<div class="footer">
+
+    Google Maps Web Automation Project
+
+    <br>
+
+    Generated automatically using
+    Python + Selenium + Chart.js
+
+</div>
+
+
+<!-- ===================================================== -->
+<!-- JAVASCRIPT CHART -->
+<!-- ===================================================== -->
+
+<script>
+
+const labels = ["Route 1 - Laggere, Bangalore", "Route 2 - Laggere, Bangalore", "Route 1 - Yeshwanthpur, Bangalore", "Route 2 - Yeshwanthpur, Bangalore", "Route 3 - Yeshwanthpur, Bangalore", "Route 1 - Majestic, Bangalore", "Route 2 - Majestic, Bangalore"];
+
+const values = [35, 46, 31, 32, 39, 53, 63];
+
+let chart;
+
+
+function getColors(count) {
+
+    const colors = [
+
+        "#2563eb",
+        "#7c3aed",
+        "#db2777",
+        "#ea580c",
+        "#16a34a",
+        "#0891b2",
+        "#ca8a04",
+        "#4f46e5",
+        "#9333ea",
+        "#0284c7"
+
+    ];
+
+    const result = [];
+
+    for (
+        let i = 0;
+        i < count;
+        i++
+    ) {
+
+        result.push(
+            colors[
+                i % colors.length
+            ]
+        );
+
+    }
+
+    return result;
+
+}
+
+
+function createChart(type) {
+
+    const canvas =
+        document.getElementById(
+            "travelChart"
+        );
+
+    const ctx =
+        canvas.getContext("2d");
+
+
+    if (chart) {
+
+        chart.destroy();
+
+    }
+
+
+    let chartType = type;
+
+
+    // ------------------------------------------------------
+    // PIE CHART
+    // ------------------------------------------------------
+
+    if (type === "pie") {
+
+        chart = new Chart(
+            ctx,
+            {
+
+                type: "pie",
+
+                data: {
+
+                    labels: labels,
+
+                    datasets: [{
+
+                        label:
+                            "Travel Time",
+
+                        data: values,
+
+                        backgroundColor:
+                            getColors(
+                                values.length
+                            ),
+
+                        borderColor:
+                            "#ffffff",
+
+                        borderWidth: 2
+
+                    }]
+
+                },
+
+                options: {
+
+                    responsive: true,
+
+                    maintainAspectRatio: false,
+
+                    plugins: {
+
+                        legend: {
+
+                            position: "right"
+
+                        },
+
+                        title: {
+
+                            display: true,
+
+                            text:
+                                "Travel Time by Route"
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        );
+
+        return;
+
+    }
+
+
+    // ------------------------------------------------------
+    // BAR / LINE
+    // ------------------------------------------------------
+
+    chart = new Chart(
+        ctx,
+        {
+
+            type: chartType,
+
+            data: {
+
+                labels: labels,
+
+                datasets: [{
+
+                    label:
+                        "Travel Time (minutes)",
+
+                    data: values,
+
+                    backgroundColor:
+                        type === "line"
+                        ? "rgba(37, 99, 235, 0.20)"
+                        : getColors(
+                            values.length
+                        ),
+
+                    borderColor:
+                        "#2563eb",
+
+                    borderWidth: 2,
+
+                    fill:
+                        type === "line",
+
+                    tension:
+                        0.35
+
+                }]
+
+            },
+
+            options: {
+
+                responsive: true,
+
+                maintainAspectRatio: false,
+
+                scales: {
+
+                    y: {
+
+                        beginAtZero: true,
+
+                        title: {
+
+                            display: true,
+
+                            text:
+                                "Travel Time (minutes)"
+
+                        }
+
+                    },
+
+                    x: {
+
+                        title: {
+
+                            display: true,
+
+                            text:
+                                "Routes"
+
+                        }
+
+                    }
+
+                },
+
+                plugins: {
+
+                    legend: {
+
+                        display: true
+
+                    },
+
+                    title: {
+
+                        display: true,
+
+                        text:
+                            "Google Maps Travel Time Comparison"
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    );
+
+}
+
+
+// ----------------------------------------------------------
+// CHANGE CHART
+// ----------------------------------------------------------
+
+function changeChartType() {
+
+    const selected =
+        document.getElementById(
+            "chartType"
+        ).value;
+
+    createChart(
+        selected
+    );
+
+}
+
+
+// ----------------------------------------------------------
+// INITIAL CHART
+// ----------------------------------------------------------
+
+createChart(
+    "bar"
+);
+
+</script>
+
+
+</body>
+
+</html>
